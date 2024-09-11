@@ -29,7 +29,7 @@ fun HomeScreen(
 ) {
     val navController = rememberNavController()
 
-    var currentDestination by rememberSaveable { mutableStateOf(HomeDestinations.USERS) }
+    var currentDestination by rememberSaveable { mutableStateOf(HomeDestinations.DASHBOARD) }
 
     val windowSize = with(LocalDensity.current) {
         currentWindowSize().toSize().toDpSize()

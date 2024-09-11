@@ -4,4 +4,9 @@
     <string name="users">Users</string>
     <string name="profile">Profile</string>
     <string name="user_details">User details</string>
+    <string name="placeholder_search">Search</string>
+    <string name="colors_collection">Colors collection</string>
+    <string name="users_row">Users</string>
+    <string name="dashboard_greeting">"Hello, "</string>
+    <string name="dashboard_scenery">"Scenery"</string>
 </resources>
