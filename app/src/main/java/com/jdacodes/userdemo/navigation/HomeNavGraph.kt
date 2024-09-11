@@ -14,6 +14,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.jdacodes.userdemo.dashboard.presentation.DashboardScreen
+import com.jdacodes.userdemo.dashboard.presentation.DashboardViewModel
 import com.jdacodes.userdemo.profile.presentation.account.ProfileScreen
 import com.jdacodes.userdemo.profile.presentation.account.ProfileViewModel
 import com.jdacodes.userdemo.userlist.presentation.UserScreen
@@ -30,12 +32,23 @@ fun HomeNavGraph(
     NavHost(
         navController = navController,
         route = ScreenRoutes.HomeNav.route,
-        // TODO: Replace this with Dashboard screen when implemented 
-//        startDestination = ScreenRoutes.DashboardScreen.route
-        startDestination = ScreenRoutes.UsersScreen.route
+        startDestination = ScreenRoutes.DashboardScreen.route
     ) {
         composable(route = ScreenRoutes.DashboardScreen.route) {
-            DashboardScreen()
+            val viewModel: DashboardViewModel = hiltViewModel()
+            val uiState by viewModel.uiListState.collectAsStateWithLifecycle()
+            DashboardScreen(
+                viewModel = viewModel,
+                uiState = uiState,
+                snackbarHostState = snackbarHostState,
+                onClickColor = { colorId ->
+                    // TODO: Add ColorDetail route when navigating
+//                    navController.navigate("${ScreenRoutes.ColorDetailRoute.route}/$colorId")
+                },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp)
+            )
         }
 
         composable(route = ScreenRoutes.UsersScreen.route) {
@@ -103,9 +116,3 @@ fun HomeNavGraph(
     }
 }
 
-// TODO: Implement Dashboard Screen
-//Stub composable
-@Composable
-fun DashboardScreen() {
-
-}

@@ -64,5 +64,4 @@ fun CircularImage(
         contentScale = ContentScale.Crop,
     )
 
-
 }
