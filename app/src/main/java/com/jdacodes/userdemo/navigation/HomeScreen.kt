@@ -5,6 +5,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowSize
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
@@ -13,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -20,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
+import com.jdacodes.userdemo.core.presentation.theme.getAppBarColor
+import com.jdacodes.userdemo.core.presentation.theme.getTextColor
 
 @Composable
 fun HomeScreen(
@@ -44,6 +48,14 @@ fun HomeScreen(
 
     NavigationSuiteScaffold(
         layoutType = layoutType,
+        navigationSuiteColors = NavigationSuiteDefaults.colors(
+            navigationBarContainerColor = getAppBarColor(),
+            navigationBarContentColor = getTextColor(),
+            navigationDrawerContainerColor = getAppBarColor(),
+            navigationDrawerContentColor = getTextColor(),
+            navigationRailContainerColor = getAppBarColor(),
+            navigationRailContentColor = getTextColor()
+        ),
         navigationSuiteItems = {
             HomeDestinations.entries.forEach {
                 item(

@@ -47,7 +47,6 @@ fun HomeNavGraph(
                 },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 8.dp)
             )
         }
 

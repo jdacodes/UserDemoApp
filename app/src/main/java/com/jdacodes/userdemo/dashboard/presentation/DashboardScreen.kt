@@ -3,6 +3,8 @@ package com.jdacodes.userdemo.dashboard.presentation
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +24,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -42,15 +45,22 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.jdacodes.userdemo.R
 import com.jdacodes.userdemo.core.presentation.composables.CircularImage
+import com.jdacodes.userdemo.core.presentation.theme.getGradientBackground
+import com.jdacodes.userdemo.core.presentation.theme.getTextColor
 import com.jdacodes.userdemo.core.utils.UiEvents
 import com.jdacodes.userdemo.core.utils.toComposeColor
 import com.jdacodes.userdemo.dashboard.domain.model.Color
@@ -76,6 +86,7 @@ fun DashboardScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
+
                 title = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
@@ -100,9 +111,9 @@ fun DashboardScreen(
                     }
 
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors().copy(
                     containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
+                    titleContentColor = getTextColor()
                 )
             )
         }
@@ -114,13 +125,13 @@ fun DashboardScreen(
                 .padding(paddingValues)
         ) {
             Spacer(Modifier.height(16.dp))
-            SearchBar(Modifier.padding(horizontal = 16.dp))
+            SearchBar(Modifier)
             DashboardSection(title = R.string.dashboard_scenery) {
                 DashboardCarousel()
             }
-            DashboardSection(title = R.string.users_row) {
-                UsersRow()
-            }
+//            DashboardSection(title = R.string.users_row) {
+//                UsersRow()
+//            }
             DashboardSection(title = R.string.colors_collection) {
                 ColorsCollectionGrid(
                     viewModel = viewModel,
@@ -150,25 +161,44 @@ fun DashboardScreen(
 fun SearchBar(
     modifier: Modifier = Modifier
 ) {
+
     TextField(
         value = "",
         onValueChange = {},
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = null
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
-        colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-            focusedContainerColor = MaterialTheme.colorScheme.surface
+
+        colors = TextFieldDefaults.colors().copy(
+            focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+            unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+            focusedContainerColor = androidx.compose.ui.graphics.Color.Transparent, // Avoid the default background
+            unfocusedContainerColor = androidx.compose.ui.graphics.Color.Transparent, // Avoid the default background
+            focusedTextColor = getTextColor(),  // Dynamically set text color
+            cursorColor = getTextColor(), // Use the same text color for cursor
+
         ),
         placeholder = {
-            Text(stringResource(R.string.placeholder_search))
+            Text(
+                stringResource(R.string.placeholder_search),
+                color = getTextColor().copy(alpha = 0.6f)
+            )
         },
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(
+                RoundedCornerShape(40.dp)
+            )
+            .background(
+                brush = getGradientBackground()
+            ),
+        textStyle = TextStyle(color = getTextColor()),
     )
 }
 
@@ -181,7 +211,11 @@ fun DashboardSection(
     Column(modifier) {
         Text(
             text = stringResource(title),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = getTextColor(),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            ),
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .paddingFromBaseline(top = 40.dp, bottom = 16.dp)
@@ -270,14 +304,20 @@ fun ColorsCollectionCard(
     onClick: (Color) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     Surface(
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = modifier
+
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.width(255.dp)
+            modifier = Modifier
+                .width(255.dp)
+                .background(
+                    brush = getGradientBackground()
+                )
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_color), // Your image resource
@@ -288,7 +328,11 @@ fun ColorsCollectionCard(
             )
             Text(
                 text = color.name,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                    color = getTextColor()
+                ),
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
         }

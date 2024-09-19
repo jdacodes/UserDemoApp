@@ -65,7 +65,7 @@ fun ProfileScreenContent(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.TopCenter
         ) {
             LazyColumn {
                 item {
@@ -84,7 +84,7 @@ fun ProfileScreenContent(
                         modifier = Modifier.padding(8.dp),
                         onClick = onClickLogout,
                         shape = RoundedCornerShape(40.dp),
-                        colors = ButtonDefaults.buttonColors(
+                        colors = ButtonDefaults.buttonColors().copy(
                             containerColor = MaterialTheme.colorScheme.primary,
                         )
                     ) {

@@ -3,15 +3,18 @@ package com.jdacodes.userdemo.dashboard.presentation.composables
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -28,13 +31,24 @@ import kotlinx.coroutines.Dispatchers
 fun DashboardCarousel(
 ) {
     val carouselState = rememberCarouselState { 3 }
-    Box(modifier = Modifier.height(200.dp), contentAlignment = Alignment.Center) {
+
+    Box(
+        modifier = Modifier.height(200.dp),
+        contentAlignment = Alignment.Center
+    ) {
+
         HorizontalMultiBrowseCarousel(
+            modifier = Modifier.clip(MaterialTheme.shapes.large),
             state = carouselState,
             preferredItemWidth = 300.dp,
             itemSpacing = 10.dp,
+            contentPadding = PaddingValues(horizontal = 16.dp)
         ) { page ->
-            Box(modifier = Modifier.size(300.dp)) {
+            Box(
+                modifier = Modifier
+                    .size(400.dp)
+                    .maskClip(shape = MaterialTheme.shapes.large)
+            ) {
                 val id = when (page) {
                     0 -> R.drawable.img_carousel1
                     1 -> R.drawable.img_carousel2

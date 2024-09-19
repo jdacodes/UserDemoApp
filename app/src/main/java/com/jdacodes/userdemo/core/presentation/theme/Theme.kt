@@ -1,6 +1,5 @@
 package com.jdacodes.userdemo.core.presentation.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -9,18 +8,23 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = BaseLight,
+    secondary = LavenderLight,
+    tertiary = MauveLight,
+    background = CrustDark
+
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = BaseDark,
+    secondary = LavenderDark,
+    tertiary = MauveDark,
+    background = CrustLight
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -56,4 +60,31 @@ fun UserDemoTheme(
         shapes = shapes,
         content = content
     )
+}
+@Composable
+fun getAppBarColor(): Color {
+    return if (isSystemInDarkTheme()) {
+        BaseDark
+    } else {
+        BaseLight
+    }
+}
+// Function to get gradient background
+@Composable
+fun getGradientBackground(): Brush {
+    return if (isSystemInDarkTheme()) {
+        Brush.linearGradient(colors = DarkGradientColors)
+    } else {
+        Brush.linearGradient(colors = LightGradientColors)
+    }
+}
+
+// Function to get text color based on the theme
+@Composable
+fun getTextColor(): androidx.compose.ui.graphics.Color {
+    return if (isSystemInDarkTheme()) {
+        DarkTextColor
+    } else {
+        LightTextColor
+    }
 }
