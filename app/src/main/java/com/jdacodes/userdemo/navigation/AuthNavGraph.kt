@@ -18,6 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.jdacodes.userdemo.auth.presentation.login.LoginScreen
 import com.jdacodes.userdemo.auth.presentation.login.LoginViewModel
+import com.jdacodes.userdemo.auth.presentation.register.RegisterScreen
+import com.jdacodes.userdemo.auth.presentation.register.RegisterViewModel
 import kotlinx.coroutines.launch
 
 fun NavGraphBuilder.AuthNav(
@@ -31,7 +33,6 @@ fun NavGraphBuilder.AuthNav(
         composable(route = ScreenRoutes.LoginScreen.route) {
             val viewModel: LoginViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-            val context = LocalContext.current
             val scope = rememberCoroutineScope()
             Log.d("AuthNav", "Navigating to LoginScreen")
 
@@ -65,12 +66,52 @@ fun NavGraphBuilder.AuthNav(
                     .fillMaxSize()
                     .padding(16.dp),
                 snackbarHostState = snackbarHostState,
-                onClickDontHaveAccount = {},
+                onClickDontHaveAccount = { navController.navigate(ScreenRoutes.RegisterScreen.route)},
                 onClickForgotPassword = {},
 
                 )
         }
         //Add other composables for AuthNav
+
+        composable(route = ScreenRoutes.RegisterScreen.route) {
+            val viewModel: RegisterViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val scope = rememberCoroutineScope()
+            Log.d("AuthNav", "Navigating to RegisterScreen")
+
+            RegisterScreen(
+                viewModel = viewModel,
+                uiState = uiState,
+                onRegisterSuccess = { message ->
+                    navController.popBackStack()
+                    navController.navigate(ScreenRoutes.HomeNav.route) {
+                        popUpTo(ScreenRoutes.RegisterScreen.route) { inclusive = true }
+                    }
+                    scope.launch {
+                        Log.d(
+                            "AuthNav",
+                            "Showing snackbar on login success with message: $message"
+                        )
+                        snackbarHostState.showSnackbar(message)
+                    }
+
+                },
+                onRegisterFailure = { message ->
+                    scope.launch {
+                        Log.d(
+                            "AuthNav",
+                            "Showing snackbar on login failure with message: $message"
+                        )
+                        snackbarHostState.showSnackbar(message)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                snackbarHostState = snackbarHostState,
+                onBackClick = { navController.navigateUp() }
+            )
+        }
     }
 }
 

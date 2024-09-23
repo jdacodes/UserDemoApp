@@ -12,6 +12,7 @@ import com.jdacodes.userdemo.core.utils.Constants.HOME_NAV_GRAPH
 import com.jdacodes.userdemo.core.utils.Constants.HOME_SCREEN
 import com.jdacodes.userdemo.core.utils.Constants.LOGIN_SCREEN
 import com.jdacodes.userdemo.core.utils.Constants.PROFILE_SCREEN
+import com.jdacodes.userdemo.core.utils.Constants.REGISTER_SCREEN
 import com.jdacodes.userdemo.core.utils.Constants.USER_DETAIL_SCREEN
 import com.jdacodes.userdemo.core.utils.Constants.USERS_SCREEN
 
@@ -23,6 +24,7 @@ sealed class ScreenRoutes(
 ) {
     //Screen Routes
     data object LoginScreen: ScreenRoutes(LOGIN_SCREEN)
+    data object RegisterScreen: ScreenRoutes(REGISTER_SCREEN)
 
     data object HomeScreen: ScreenRoutes(HOME_SCREEN)
 

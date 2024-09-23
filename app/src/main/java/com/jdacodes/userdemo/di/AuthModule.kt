@@ -3,10 +3,14 @@ package com.jdacodes.userdemo.di
 import com.jdacodes.userdemo.auth.data.local.AuthPreferences
 import com.jdacodes.userdemo.auth.data.remote.AuthApiService
 import com.jdacodes.userdemo.auth.data.repository.LoginRepositoryImpl
+import com.jdacodes.userdemo.auth.data.repository.RegisterRepositoryImpl
 import com.jdacodes.userdemo.auth.domain.repository.LoginRepository
+import com.jdacodes.userdemo.auth.domain.repository.RegisterRepository
 import com.jdacodes.userdemo.auth.domain.use_case.AutoLoginCase
 import com.jdacodes.userdemo.auth.domain.use_case.LoginCase
 import com.jdacodes.userdemo.auth.domain.use_case.LogoutCase
+import com.jdacodes.userdemo.auth.domain.use_case.RegisterCase
+import com.jdacodes.userdemo.auth.domain.use_case.ValidateConfirmCase
 import com.jdacodes.userdemo.auth.domain.use_case.ValidateEmailCase
 import com.jdacodes.userdemo.auth.domain.use_case.ValidatePasswordCase
 import com.jdacodes.userdemo.core.utils.Constants.BASE_URL
@@ -36,6 +40,12 @@ object AuthModule {
 
     @Provides
     @Singleton
+    fun provideValidateConfirmPassword(): ValidateConfirmCase {
+        return ValidateConfirmCase()
+    }
+
+    @Provides
+    @Singleton
     fun provideLogin(
         loginRepository: LoginRepository,
         validateEmailCase: ValidateEmailCase,
@@ -45,6 +55,22 @@ object AuthModule {
             loginRepository = loginRepository,
             validateEmailUseCase = validateEmailCase,
             validatePasswordUseCase = validatePasswordCase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegister(
+        registerRepository: RegisterRepository,
+        validateEmailCase: ValidateEmailCase,
+        validatePasswordCase: ValidatePasswordCase,
+        validateConfirmCase: ValidateConfirmCase
+    ): RegisterCase {
+        return RegisterCase(
+            registerRepository = registerRepository,
+            validateEmailUseCase = validateEmailCase,
+            validatePasswordUseCase = validatePasswordCase,
+            validateConfirmCase = validateConfirmCase
         )
     }
 
@@ -68,6 +94,20 @@ object AuthModule {
         userApiService: UserApiService
     ): LoginRepository {
         return LoginRepositoryImpl(
+            authApiService = authApiService,
+            authPreferences = authPreferences,
+            userApiService = userApiService
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegisterRepository(
+        authApiService: AuthApiService,
+        authPreferences: AuthPreferences,
+        userApiService: UserApiService
+    ): RegisterRepository {
+        return RegisterRepositoryImpl(
             authApiService = authApiService,
             authPreferences = authPreferences,
             userApiService = userApiService
