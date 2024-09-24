@@ -4,6 +4,7 @@ import com.jdacodes.userdemo.auth.data.local.AuthPreferences
 import com.jdacodes.userdemo.auth.data.remote.AuthApiService
 import com.jdacodes.userdemo.auth.data.repository.LoginRepositoryImpl
 import com.jdacodes.userdemo.auth.data.repository.RegisterRepositoryImpl
+import com.jdacodes.userdemo.auth.data.util.EmailValidatorImpl
 import com.jdacodes.userdemo.auth.domain.repository.LoginRepository
 import com.jdacodes.userdemo.auth.domain.repository.RegisterRepository
 import com.jdacodes.userdemo.auth.domain.use_case.AutoLoginCase
@@ -13,6 +14,7 @@ import com.jdacodes.userdemo.auth.domain.use_case.RegisterCase
 import com.jdacodes.userdemo.auth.domain.use_case.ValidateConfirmCase
 import com.jdacodes.userdemo.auth.domain.use_case.ValidateEmailCase
 import com.jdacodes.userdemo.auth.domain.use_case.ValidatePasswordCase
+import com.jdacodes.userdemo.auth.util.EmailValidator
 import com.jdacodes.userdemo.core.utils.Constants.BASE_URL
 import com.jdacodes.userdemo.userlist.data.remote.UserApiService
 import dagger.Module
@@ -26,10 +28,15 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AuthModule {
+
     @Provides
     @Singleton
-    fun provideValidateEmail(): ValidateEmailCase {
-        return ValidateEmailCase()
+    fun provideEmailValidator(): EmailValidator = EmailValidatorImpl()
+
+    @Provides
+    @Singleton
+    fun provideValidateEmail(emailValidator: EmailValidator): ValidateEmailCase {
+        return ValidateEmailCase(emailValidator)
     }
 
     @Provides

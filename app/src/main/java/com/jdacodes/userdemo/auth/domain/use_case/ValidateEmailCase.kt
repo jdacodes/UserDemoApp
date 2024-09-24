@@ -1,12 +1,11 @@
 package com.jdacodes.userdemo.auth.domain.use_case
 
-import android.util.Patterns
+import com.jdacodes.userdemo.auth.util.EmailValidator
 import com.jdacodes.userdemo.core.utils.Resource
 
-class ValidateEmailCase {
-    // TODO: Change implementation for Testing 
+class ValidateEmailCase (private val emailValidator: EmailValidator){
     fun execute(email: String): Resource<Unit> {
-        return if (email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        return if (email.isNotEmpty() && emailValidator.isValid(email)) {
             Resource.Success(Unit)
         } else {
             Resource.Error("Invalid email address")
