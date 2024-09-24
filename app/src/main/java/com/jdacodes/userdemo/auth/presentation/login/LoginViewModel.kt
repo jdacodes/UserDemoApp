@@ -27,11 +27,22 @@ class LoginViewModel @Inject constructor(
     private val _eventFormChannel = Channel<LoginFormEvent>()
     val eventFormFlow = _eventFormChannel.receiveAsFlow()
 
+    private fun resetFormErrorStates() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                form = currentState.form.copy(
+                    emailError = null,
+                    passwordError = null
+                )
+            )
+        }
+    }
+
     fun login(email: String, password: String, rememberMe: Boolean) {
         viewModelScope.launch {
             Log.d("LoginViewModel", "Login started for email: $email")
             _uiState.update { it.copy(isLoading = true) }
-
+            resetFormErrorStates()
             val loginResult = loginUseCase.execute(email, password, rememberMe)
 
 //            var validationErrorMessage: String? = null

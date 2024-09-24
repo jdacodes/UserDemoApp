@@ -4,8 +4,8 @@ import android.util.Log
 import com.jdacodes.userdemo.auth.data.local.AuthPreferences
 import com.jdacodes.userdemo.auth.data.remote.AuthApiService
 import com.jdacodes.userdemo.auth.data.remote.request.LoginRequest
-import com.jdacodes.userdemo.auth.domain.model.LoginResult
 import com.jdacodes.userdemo.auth.domain.repository.LoginRepository
+import com.jdacodes.userdemo.auth.util.parseErrorMessage
 import com.jdacodes.userdemo.core.utils.Resource
 import com.jdacodes.userdemo.userlist.data.remote.UserApiService
 import com.jdacodes.userdemo.userlist.data.remote.dto.UserDto
@@ -23,13 +23,23 @@ class LoginRepositoryImpl(
         rememberMe: Boolean
     ): Resource<Unit> {
         return try {
-            authApiService.loginUser(loginRequest)
             val response = authApiService.loginUser(loginRequest)
-            findUserByEmail(loginRequest.username)?.let { authPreferences.saveUserdata(it) }
-            if (rememberMe) {
-                authPreferences.saveAccessToken(response.token)
+            if (response.isSuccessful) {
+                findUserByEmail(loginRequest.username)?.let { authPreferences.saveUserdata(it) }
+                val token = response.body()?.token
+                if (rememberMe && token != null) {
+                    authPreferences.saveAccessToken(token)
+                }
+                Resource.Success(Unit)
+            } else {
+                // Handle error response
+                val errorResponse = response.errorBody()?.string()
+                val errorMessage = parseErrorMessage(errorResponse)
+                Log.d("LoginRepositoryImpl", errorMessage)
+                Resource.Error(message = errorMessage)
             }
-            Resource.Success(Unit)
+
+
         } catch (e: IOException) {
             Log.d("LoginRepositoryImpl", "Login error: ${e.message}")
             Resource.Error(message = "Could not reach the server, please check your internet connection!")

@@ -9,11 +9,10 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface AuthApiService {
-    // TODO: Make login response handle error
     @POST("api/login")
     suspend fun loginUser(
         @Body loginRequest: LoginRequest
-    ): LoginResponseDto
+    ): Response<LoginResponseDto>
 
     @POST("api/register")
     suspend fun registerUser(

@@ -38,6 +38,7 @@ class RegisterRepositoryImpl(
                 // Handle error response
                 val errorResponse = response.errorBody()?.string()
                 val errorMessage = parseErrorMessage(errorResponse)
+                Log.d("RegisterRepositoryImpl", errorMessage)
                 Resource.Error(message = errorMessage)
             }
 
