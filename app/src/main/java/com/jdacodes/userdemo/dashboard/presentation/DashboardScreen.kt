@@ -1,10 +1,11 @@
 package com.jdacodes.userdemo.dashboard.presentation
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -40,12 +42,17 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -59,11 +66,13 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.jdacodes.userdemo.R
 import com.jdacodes.userdemo.core.presentation.composables.CircularImage
+import com.jdacodes.userdemo.core.presentation.theme.getAppBarColor
 import com.jdacodes.userdemo.core.presentation.theme.getGradientBackground
 import com.jdacodes.userdemo.core.presentation.theme.getTextColor
 import com.jdacodes.userdemo.core.utils.UiEvents
 import com.jdacodes.userdemo.core.utils.toComposeColor
 import com.jdacodes.userdemo.dashboard.domain.model.Color
+import com.jdacodes.userdemo.dashboard.presentation.composables.ColorDetailElement
 import com.jdacodes.userdemo.dashboard.presentation.composables.DashboardCarousel
 import kotlinx.coroutines.flow.collectLatest
 import java.util.Locale
@@ -74,9 +83,13 @@ fun DashboardScreen(
     viewModel: DashboardViewModel,
     uiState: ColorListState,
     snackbarHostState: SnackbarHostState,
-    onClickColor: (Int) -> Unit,
+//    onClickColor: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showColorDetail by remember { mutableStateOf(false) }
+    var colorDetails by remember { mutableStateOf<Color?>(null) }
+    val sheetState = rememberModalBottomSheetState()
+
     LaunchedEffect(key1 = true) {
         viewModel.getProfile()
     }
@@ -129,13 +142,15 @@ fun DashboardScreen(
             DashboardSection(title = R.string.dashboard_scenery) {
                 DashboardCarousel()
             }
-//            DashboardSection(title = R.string.users_row) {
-//                UsersRow()
-//            }
+
             DashboardSection(title = R.string.colors_collection) {
                 ColorsCollectionGrid(
                     viewModel = viewModel,
-                    onClickColor = onClickColor,
+                    onClickColor = {
+                        colorDetails = it
+                        showColorDetail = true
+                        Log.d("BottomSheet", "Color clicked: $it")
+                    },
                     uiState = uiState,
                     snackbarHostState = snackbarHostState,
                     modifier = modifier
@@ -153,6 +168,18 @@ fun DashboardScreen(
                 is UiEvents.NavigateEvent -> {
                 }
             }
+        }
+    }
+
+    if (showColorDetail && colorDetails != null) {
+        ModalBottomSheet(
+            containerColor = getAppBarColor(),
+            onDismissRequest = {
+                showColorDetail = false
+                colorDetails = null
+            }, sheetState = sheetState
+        ) {
+            ColorDetailElement(color = colorDetails!!)
         }
     }
 }
@@ -228,7 +255,7 @@ fun DashboardSection(
 fun ColorsCollectionGrid(
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel,
-    onClickColor: (Int) -> Unit,
+    onClickColor: (Color) -> Unit,
     uiState: ColorListState,
     snackbarHostState: SnackbarHostState
 ) {
@@ -246,7 +273,10 @@ fun ColorsCollectionGrid(
             color?.let { it ->
                 ColorsCollectionCard(
                     color = it,
-                    onClick = { onClickColor(it.id) },
+                    onClick = {
+                        Log.d("ColorsCollectionGrid", "Color clicked: $it")
+                        onClickColor(it)
+                    },
                     Modifier.height(80.dp)
                 )
             }
@@ -301,14 +331,14 @@ fun ColorsCollectionGrid(
 @Composable
 fun ColorsCollectionCard(
     color: Color,
-    onClick: (Color) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     Surface(
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surfaceVariant,
-        modifier = modifier
+        modifier = modifier.clickable(onClick = onClick)
 
     ) {
         Row(

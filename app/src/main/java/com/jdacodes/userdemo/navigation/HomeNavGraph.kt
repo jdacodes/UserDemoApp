@@ -41,10 +41,6 @@ fun HomeNavGraph(
                 viewModel = viewModel,
                 uiState = uiState,
                 snackbarHostState = snackbarHostState,
-                onClickColor = { colorId ->
-                    // TODO: Add ColorDetail route when navigating
-//                    navController.navigate("${ScreenRoutes.ColorDetailRoute.route}/$colorId")
-                },
                 modifier = Modifier
                     .fillMaxSize()
             )
