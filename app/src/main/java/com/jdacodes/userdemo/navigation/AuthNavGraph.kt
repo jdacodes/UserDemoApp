@@ -7,11 +7,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -25,7 +24,9 @@ import kotlinx.coroutines.launch
 fun NavGraphBuilder.AuthNav(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
-) {
+    keyboardController: SoftwareKeyboardController,
+
+    ) {
     navigation(
         startDestination = ScreenRoutes.LoginScreen.route,
         route = ScreenRoutes.AuthNav.route
@@ -68,10 +69,10 @@ fun NavGraphBuilder.AuthNav(
                 snackbarHostState = snackbarHostState,
                 onClickDontHaveAccount = { navController.navigate(ScreenRoutes.RegisterScreen.route)},
                 onClickForgotPassword = {},
+                keyboardController = keyboardController
 
                 )
         }
-        //Add other composables for AuthNav
 
         composable(route = ScreenRoutes.RegisterScreen.route) {
             val viewModel: RegisterViewModel = hiltViewModel()
@@ -109,7 +110,8 @@ fun NavGraphBuilder.AuthNav(
                     .fillMaxSize()
                     .padding(16.dp),
                 snackbarHostState = snackbarHostState,
-                onBackClick = { navController.navigateUp() }
+                onBackClick = { navController.navigateUp() },
+                keyboardController = keyboardController
             )
         }
     }

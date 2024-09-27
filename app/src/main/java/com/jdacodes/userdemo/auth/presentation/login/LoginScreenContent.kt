@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
@@ -39,13 +39,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -73,7 +78,12 @@ fun LoginScreenContent(
     onRememberMeClicked: (Boolean) -> Unit,
     onClickForgotPassword: () -> Unit,
     onClickDontHaveAccount: () -> Unit,
+    keyboardController: SoftwareKeyboardController,
 ) {
+
+    val emailFocusRequester = remember { FocusRequester() }
+    val passwordFocusRequester = remember { FocusRequester() }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -105,10 +115,15 @@ fun LoginScreenContent(
             )
             LazyColumn(contentPadding = paddingValues) {
                 item {
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .height(32.dp)
+                    )
                     Column {
                         OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(emailFocusRequester),
                             value = emailState,
                             onValueChange = {
                                 onEmailTextChange(it)
@@ -121,12 +136,19 @@ fun LoginScreenContent(
                             },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text
+                            ).copy(
+                                imeAction = ImeAction.Next
                             ),
+                            keyboardActions = KeyboardActions(
+                                onNext = {
+                                    passwordFocusRequester.requestFocus()  // Move focus to the next TextField when 'Next' is clicked
+                                }),
                             maxLines = 1,
                             singleLine = true,
                             isError = uiState.form.emailError != null,
-                            colors = outlineTextFieldColors
-                        )
+                            colors = outlineTextFieldColors,
+
+                            )
                         if (uiState.form.emailError != null) {
                             Text(
                                 text = uiState.form.emailError ?: "",
@@ -144,7 +166,9 @@ fun LoginScreenContent(
 
                     Column {
                         OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(passwordFocusRequester),
                             value = passwordState,
                             onValueChange = {
                                 onPasswordTextChange(it)
@@ -158,8 +182,14 @@ fun LoginScreenContent(
                             visualTransformation = if (passwordVisible) VisualTransformation.None
                             else PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Password,
+                                keyboardType = KeyboardType.Text
+                            ).copy(
+                                imeAction = ImeAction.Done
                             ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    keyboardController.hide()
+                                }),
                             trailingIcon = {
                                 val image = if (passwordVisible)
                                     Icons.Outlined.Visibility

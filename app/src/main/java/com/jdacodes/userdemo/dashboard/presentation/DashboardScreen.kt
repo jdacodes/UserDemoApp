@@ -26,6 +26,8 @@ import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -46,7 +48,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -56,10 +57,12 @@ import androidx.compose.ui.draw.clip
 
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
@@ -84,7 +87,8 @@ fun DashboardScreen(
     uiState: ColorListState,
     snackbarHostState: SnackbarHostState,
 //    onClickColor: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    keyboardController: SoftwareKeyboardController
 ) {
     var showColorDetail by remember { mutableStateOf(false) }
     var colorDetails by remember { mutableStateOf<Color?>(null) }
@@ -94,6 +98,7 @@ fun DashboardScreen(
         viewModel.getProfile()
     }
     val user = viewModel.profileState.value
+    val searchQuery by viewModel.searchQuery
 
     Scaffold(
         modifier = modifier,
@@ -138,7 +143,12 @@ fun DashboardScreen(
                 .padding(paddingValues)
         ) {
             Spacer(Modifier.height(16.dp))
-            SearchBar(Modifier)
+            SearchBar(
+                query = searchQuery,
+                onQueryChange = { viewModel.onSearchQueryChanged(it) },
+                keyboardController = keyboardController,
+                modifier = Modifier
+            )
             DashboardSection(title = R.string.dashboard_scenery) {
                 DashboardCarousel()
             }
@@ -186,12 +196,15 @@ fun DashboardScreen(
 
 @Composable
 fun SearchBar(
-    modifier: Modifier = Modifier
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    keyboardController: SoftwareKeyboardController
 ) {
 
     TextField(
-        value = "",
-        onValueChange = {},
+        value = query,
+        onValueChange = onQueryChange,
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
@@ -199,7 +212,7 @@ fun SearchBar(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
-
+        singleLine = true,
         colors = TextFieldDefaults.colors().copy(
             focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
             unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
@@ -226,6 +239,10 @@ fun SearchBar(
                 brush = getGradientBackground()
             ),
         textStyle = TextStyle(color = getTextColor()),
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = {
+            keyboardController.hide()
+        }),
     )
 }
 

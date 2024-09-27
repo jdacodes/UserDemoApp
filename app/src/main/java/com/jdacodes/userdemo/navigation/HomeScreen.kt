@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -90,7 +89,8 @@ fun HomeScreen(
         HomeNavGraph(
             navController = navController,
             logout = logout,
-            snackbarHostState = snackbarHostState
+            snackbarHostState = snackbarHostState,
+            keyboardController = keyboardController
         )
     }
 

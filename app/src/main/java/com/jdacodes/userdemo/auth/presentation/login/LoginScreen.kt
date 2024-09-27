@@ -4,6 +4,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.SoftwareKeyboardController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -15,7 +16,8 @@ fun LoginScreen(
     onClickDontHaveAccount: () -> Unit,
     onClickForgotPassword: () -> Unit,
     snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    keyboardController: SoftwareKeyboardController
 ) {
     val emailState = uiState.form.email
     val passwordState = uiState.form.password
@@ -37,6 +39,7 @@ fun LoginScreen(
         emailState = emailState,
         passwordState = passwordState,
         rememberMeState = rememberMeState,
+        keyboardController = keyboardController
     )
 
 }

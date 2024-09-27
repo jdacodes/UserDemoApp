@@ -3,6 +3,7 @@ package com.jdacodes.userdemo.auth.presentation.register
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.SoftwareKeyboardController
 
 @Composable
 fun RegisterScreen(
@@ -12,7 +13,8 @@ fun RegisterScreen(
     onRegisterFailure: (String) -> Unit,
     onBackClick: () -> Unit,
     snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    keyboardController: SoftwareKeyboardController
 ) {
     val emailState = uiState.form.email
     val passwordState = uiState.form.password
@@ -31,8 +33,9 @@ fun RegisterScreen(
         confirmState = confirmState,
         onEmailTextChange = { viewModel.onFormEvent(RegisterFormEvent.EmailChanged(it)) },
         onPasswordTextChange = { viewModel.onFormEvent(RegisterFormEvent.PasswordChanged(it)) },
-        onConfirmTextChange = { viewModel.onFormEvent(RegisterFormEvent.ConfirmChanged(it))},
-        onBackClick = onBackClick
+        onConfirmTextChange = { viewModel.onFormEvent(RegisterFormEvent.ConfirmChanged(it)) },
+        onBackClick = onBackClick,
+        keyboardController = keyboardController
     )
 
 

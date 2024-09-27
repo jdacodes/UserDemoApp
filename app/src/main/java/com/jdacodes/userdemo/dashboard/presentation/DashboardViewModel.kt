@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import com.google.gson.Gson
 import com.jdacodes.userdemo.core.utils.Resource
 import com.jdacodes.userdemo.core.utils.UiEvents
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -55,6 +57,8 @@ class DashboardViewModel @Inject constructor(
     private val _colors = MutableStateFlow<PagingData<Color>>(PagingData.empty())
     val colors: StateFlow<PagingData<Color>> = _colors.asStateFlow()
 
+    var searchQuery = mutableStateOf("")
+
     init {
         loadColors()
     }
@@ -65,6 +69,24 @@ class DashboardViewModel @Inject constructor(
             getColorListCase().cachedIn(viewModelScope).collectLatest { pagingData ->
                 _colors.value = pagingData
             }
+        }
+    }
+
+    fun onSearchQueryChanged(newQuery: String) {
+        searchQuery.value = newQuery
+        loadFilteredColors()
+    }
+
+    private fun loadFilteredColors() {
+        colorListJob?.cancel()
+        colorListJob = viewModelScope.launch {
+            getColorListCase()
+                .cachedIn(viewModelScope)
+                .map { pagingData ->
+                    pagingData.filter { it.name.contains(searchQuery.value, ignoreCase = true) }
+                }.collectLatest { filteredPagingData ->
+                    _colors.value = filteredPagingData
+                }
         }
     }
 

@@ -20,7 +20,8 @@ fun RootNav(
     ) {
         AuthNav(
             navController = navController,
-            snackbarHostState = snackbarHostState
+            snackbarHostState = snackbarHostState,
+            keyboardController = keyboardController
         )
 
         composable(route = ScreenRoutes.HomeNav.route) {

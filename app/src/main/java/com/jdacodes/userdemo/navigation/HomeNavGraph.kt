@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -27,7 +28,8 @@ import kotlinx.coroutines.launch
 fun HomeNavGraph(
     navController: NavHostController,
     logout: () -> Unit,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    keyboardController: SoftwareKeyboardController
 ) {
     NavHost(
         navController = navController,
@@ -40,6 +42,7 @@ fun HomeNavGraph(
             DashboardScreen(
                 viewModel = viewModel,
                 uiState = uiState,
+                keyboardController = keyboardController,
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .fillMaxSize()
