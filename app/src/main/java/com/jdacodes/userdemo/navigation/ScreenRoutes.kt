@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.jdacodes.userdemo.R
 import com.jdacodes.userdemo.core.utils.Constants.AUTH_NAV_GRAPH
 import com.jdacodes.userdemo.core.utils.Constants.DASHBOARD_SCREEN
+import com.jdacodes.userdemo.core.utils.Constants.FORGOT_PASSWORD_SCREEN
 import com.jdacodes.userdemo.core.utils.Constants.HOME_NAV_GRAPH
 import com.jdacodes.userdemo.core.utils.Constants.HOME_SCREEN
 import com.jdacodes.userdemo.core.utils.Constants.LOGIN_SCREEN
@@ -25,6 +26,7 @@ sealed class ScreenRoutes(
     //Screen Routes
     data object LoginScreen: ScreenRoutes(LOGIN_SCREEN)
     data object RegisterScreen: ScreenRoutes(REGISTER_SCREEN)
+    data object ForgotPasswordScreen: ScreenRoutes(FORGOT_PASSWORD_SCREEN)
 
     data object HomeScreen: ScreenRoutes(HOME_SCREEN)
 

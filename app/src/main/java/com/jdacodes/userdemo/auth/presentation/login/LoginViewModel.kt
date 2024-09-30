@@ -38,6 +38,26 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    private fun setEmailError(error: String?) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                form = currentState.form.copy(
+                    emailError = error
+                )
+            )
+        }
+    }
+
+    private fun setPasswordError(error: String?) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                form = currentState.form.copy(
+                    passwordError = error
+                )
+            )
+        }
+    }
+
     fun login(email: String, password: String, rememberMe: Boolean) {
         viewModelScope.launch {
             Log.d("LoginViewModel", "Login started for email: $email")
@@ -92,6 +112,9 @@ class LoginViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
+                            form = it.form.copy(
+                                emailError = loginResult.result.message ?: "Login failed"
+                            )
                         )
                     }
                     _eventChannel.send(
@@ -106,7 +129,7 @@ class LoginViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessage = "Unknown error occurred"
+                            form = it.form.copy(emailError = "Unknown error occurred")
                         )
                     }
                     _eventChannel.send(
@@ -130,6 +153,7 @@ class LoginViewModel @Inject constructor(
                         )
                     )
                 }
+                setEmailError(null)
             }
 
             is LoginFormEvent.PasswordChanged -> {
@@ -141,6 +165,7 @@ class LoginViewModel @Inject constructor(
                         )
                     )
                 }
+                setPasswordError(null)
             }
 
             is LoginFormEvent.RememberMeChanged -> {
@@ -162,10 +187,24 @@ class LoginViewModel @Inject constructor(
                 val password = _uiState.value.form.password
                 val rememberMe = _uiState.value.form.rememberMe
 
-                if (email.isNotBlank() && password.isNotBlank()) {
-                    login(email, password, rememberMe)
+                var hasError = false
+
+                if (email.isBlank()) {
+                    setEmailError("Email cannot be empty")
+                    hasError = true
                 } else {
-                    // Handle form validation errors here if needed
+                    setEmailError(null)
+                }
+
+                if (password.isBlank()) {
+                    setPasswordError("Password cannot be empty")
+                    hasError = true
+                } else {
+                    setPasswordError(null)
+                }
+
+                if (!hasError) {
+                    login(email, password, rememberMe)
                 }
             }
         }

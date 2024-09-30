@@ -6,6 +6,7 @@ object Constants {
     //Screens
     const val LOGIN_SCREEN = "login"
     const val REGISTER_SCREEN = "register"
+    const val FORGOT_PASSWORD_SCREEN = "forgotPassword"
     const val USERS_SCREEN = "users"
     const val USER_DETAIL_SCREEN = "userDetail"
     const val DASHBOARD_SCREEN = "dashboard"

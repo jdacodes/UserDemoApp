@@ -15,6 +15,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.jdacodes.userdemo.auth.presentation.forgot.ForgotPasswordScreen
+import com.jdacodes.userdemo.auth.presentation.forgot.ForgotPasswordViewModel
 import com.jdacodes.userdemo.auth.presentation.login.LoginScreen
 import com.jdacodes.userdemo.auth.presentation.login.LoginViewModel
 import com.jdacodes.userdemo.auth.presentation.register.RegisterScreen
@@ -67,11 +69,11 @@ fun NavGraphBuilder.AuthNav(
                     .fillMaxSize()
                     .padding(16.dp),
                 snackbarHostState = snackbarHostState,
-                onClickDontHaveAccount = { navController.navigate(ScreenRoutes.RegisterScreen.route)},
-                onClickForgotPassword = {},
+                onClickDontHaveAccount = { navController.navigate(ScreenRoutes.RegisterScreen.route) },
+                onClickForgotPassword = { navController.navigate(ScreenRoutes.ForgotPasswordScreen.route) },
                 keyboardController = keyboardController
 
-                )
+            )
         }
 
         composable(route = ScreenRoutes.RegisterScreen.route) {
@@ -113,6 +115,46 @@ fun NavGraphBuilder.AuthNav(
                 onBackClick = { navController.navigateUp() },
                 keyboardController = keyboardController
             )
+        }
+
+        composable(route = ScreenRoutes.ForgotPasswordScreen.route) {
+            val viewModel: ForgotPasswordViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val scope = rememberCoroutineScope()
+            Log.d("AuthNav", "Navigating to ForgotPasswordScreen")
+
+            ForgotPasswordScreen(
+                viewModel = viewModel,
+                uiState = uiState,
+                onResetSuccess = { message ->
+                    navController.popBackStack()
+                    navController.navigate(ScreenRoutes.LoginScreen.route)
+                    scope.launch {
+                        Log.d(
+                            "AuthNav",
+                            "Showing snackbar on reset password success with message: $message"
+                        )
+                        snackbarHostState.showSnackbar(message)
+                    }
+                },
+                onResetFailure = { message ->
+                    scope.launch {
+                        Log.d(
+                            "AuthNav",
+                            "Showing snackbar on reset password failure with message: $message"
+                        )
+                        snackbarHostState.showSnackbar(message)
+                    }
+                },
+                onBackClick = { navController.navigateUp() },
+                snackbarHostState = snackbarHostState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                keyboardController = keyboardController
+
+            )
+
         }
     }
 }

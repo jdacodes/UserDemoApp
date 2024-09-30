@@ -8,6 +8,7 @@ import com.jdacodes.userdemo.auth.data.util.EmailValidatorImpl
 import com.jdacodes.userdemo.auth.domain.repository.LoginRepository
 import com.jdacodes.userdemo.auth.domain.repository.RegisterRepository
 import com.jdacodes.userdemo.auth.domain.use_case.AutoLoginCase
+import com.jdacodes.userdemo.auth.domain.use_case.ForgotPasswordCase
 import com.jdacodes.userdemo.auth.domain.use_case.LoginCase
 import com.jdacodes.userdemo.auth.domain.use_case.LogoutCase
 import com.jdacodes.userdemo.auth.domain.use_case.RegisterCase
@@ -28,6 +29,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AuthModule {
+
+    @Provides
+    @Singleton
+    fun provideForgotPasswordCase(validateEmailCase: ValidateEmailCase): ForgotPasswordCase {
+        return ForgotPasswordCase(validateEmailUseCase = validateEmailCase)
+    }
 
     @Provides
     @Singleton

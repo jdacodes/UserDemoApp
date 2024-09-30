@@ -42,17 +42,37 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
+    private fun setEmailError(error: String?) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                form = currentState.form.copy(
+                    emailError = error
+                )
+            )
+        }
+    }
+
+    private fun setPasswordError(error: String?) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                form = currentState.form.copy(
+                    passwordError = error
+                )
+            )
+        }
+    }
+
     fun register(email: String, password: String, confirm: String) {
         viewModelScope.launch {
             Log.d("RegisterViewModel", "Registration started for email: $email")
             _uiState.update { it.copy(isLoading = true) }
             resetFormErrorStates()
-            val loginResult = registerCase.execute(email, password, confirm)
+            val registerResult = registerCase.execute(email, password, confirm)
 
 //            var validationErrorMessage: String? = null
 
             // Check for validation errors
-            loginResult.emailError?.let { error ->
+            registerResult.emailError?.let { error ->
                 Log.d("RegisterViewModel", "Email error: $error")
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -65,7 +85,7 @@ class RegisterViewModel @Inject constructor(
                 _eventFormChannel.send(RegisterFormEvent.EmailChanged(error))
                 return@launch // Exit early if there are validation errors
             }
-            loginResult.passwordError?.let { error ->
+            registerResult.passwordError?.let { error ->
                 Log.d("RegisterViewModel", "Password error: $error")
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -79,7 +99,7 @@ class RegisterViewModel @Inject constructor(
                 return@launch // Exit early if there are validation errors
             }
 
-            loginResult.confirmError?.let { error ->
+            registerResult.confirmError?.let { error ->
                 Log.d("RegisterViewModel", "Confirm password error: $error")
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -93,7 +113,7 @@ class RegisterViewModel @Inject constructor(
                 return@launch // Exit early if there are validation errors
             }
 
-            when (loginResult.result) {
+            when (registerResult.result) {
                 is Resource.Success -> {
                     // Emit a success event for one-time actions like navigation
                     Log.d("RegisterViewModel", "Registration successful")
@@ -106,15 +126,22 @@ class RegisterViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    Log.d("RegisterViewModel", "Registration error: ${loginResult.result.message}")
+                    Log.d(
+                        "RegisterViewModel",
+                        "Registration error: ${registerResult.result.message}"
+                    )
                     _uiState.update {
                         it.copy(
                             isLoading = false,
+                            form = it.form.copy(
+                                emailError = registerResult.result.message ?: "Registration failed"
+                            )
+
                         )
                     }
                     _eventChannel.send(
                         RegisterEvent.RegisterFailure(
-                            message = loginResult.result.message ?: "Registration failed"
+                            message = registerResult.result.message ?: "Registration failed"
                         )
                     )
                 }
@@ -124,7 +151,7 @@ class RegisterViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessage = "Unknown error occurred"
+                            form = it.form.copy(emailError = "Unknown error occurred")
                         )
                     }
                     _eventChannel.send(
@@ -148,6 +175,7 @@ class RegisterViewModel @Inject constructor(
                         )
                     )
                 }
+                setEmailError(null)
             }
 
             is RegisterFormEvent.PasswordChanged -> {
@@ -159,6 +187,7 @@ class RegisterViewModel @Inject constructor(
                         )
                     )
                 }
+                setPasswordError(null)
             }
 
             is RegisterFormEvent.ConfirmChanged -> {
@@ -175,17 +204,30 @@ class RegisterViewModel @Inject constructor(
 
             RegisterFormEvent.Submit -> {
                 // Handle form submission logic
-                // This might involve validation and triggering a login process
+                // This might involve validation and triggering a registration process
                 // Example:
                 val email = _uiState.value.form.email
                 val password = _uiState.value.form.password
                 val confirm = _uiState.value.form.confirm
 
-                if (email.isNotBlank() && password.isNotBlank() && confirm.isNotBlank()) {
-                    register(email, password, confirm)
+                var hasError = false
+
+                if (email.isBlank()) {
+                    setEmailError("Email cannot be empty")
+                    hasError = true
                 } else {
-                    // Handle form validation errors here if needed
-                    Log.d("RegisterViewModel", "RegisterFormEvent.Submit error")
+                    setEmailError(null)
+                }
+
+                if (password.isBlank()) {
+                    setPasswordError("Password cannot be empty")
+                    hasError = true
+                } else {
+                    setPasswordError(null)
+                }
+
+                if (!hasError) {
+                    register(email, password, confirm)
                 }
             }
         }

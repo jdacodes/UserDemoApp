@@ -5,10 +5,10 @@ import com.jdacodes.userdemo.core.utils.Resource
 
 class ValidateEmailCase (private val emailValidator: EmailValidator){
     fun execute(email: String): Resource<Unit> {
-        return if (email.isNotEmpty() && emailValidator.isValid(email)) {
-            Resource.Success(Unit)
-        } else {
-            Resource.Error("Invalid email address")
+        return when {
+            email.isBlank() -> Resource.Error("Email cannot be empty")
+            !emailValidator.isValid(email) -> Resource.Error("Invalid email address")
+            else -> Resource.Success(Unit)
         }
     }
 }
