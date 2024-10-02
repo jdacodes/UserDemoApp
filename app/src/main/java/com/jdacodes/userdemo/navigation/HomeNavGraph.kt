@@ -19,6 +19,7 @@ import com.jdacodes.userdemo.dashboard.presentation.DashboardScreen
 import com.jdacodes.userdemo.dashboard.presentation.DashboardViewModel
 import com.jdacodes.userdemo.profile.presentation.account.ProfileScreen
 import com.jdacodes.userdemo.profile.presentation.account.ProfileViewModel
+import com.jdacodes.userdemo.profile.presentation.account.UpdateProfileScreen
 import com.jdacodes.userdemo.userlist.presentation.UserScreen
 import com.jdacodes.userdemo.userlist.presentation.UserViewModel
 import com.jdacodes.userdemo.userlist.presentation.composables.UserDetailScreen
@@ -105,10 +106,53 @@ fun HomeNavGraph(
                         snackbarHostState.showSnackbar(message)
                     }
                 },
+                onClickUpdateProfile = { userId ->
+                    navController.navigate("${ScreenRoutes.UpdateProfileScreen.route}/$userId")
+                },
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 8.dp),
+
+                )
+        }
+        composable(
+            route = ScreenRoutes.UpdateProfileScreen.fullRoute
+        ) { backStackEntry ->
+            val viewModel: ProfileViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val userId = backStackEntry.arguments?.getString("userId")?.toInt() ?: 0
+            val scope = rememberCoroutineScope()
+
+            UpdateProfileScreen(
+                viewModel = viewModel,
+                uiState = uiState,
+                userId = userId,
+                onUpdateSuccess = { message ->
+                    scope.launch {
+                        Log.d(
+                            "HomeNavGraph",
+                            "Showing snackbar on logout failure with message: $message"
+                        )
+                        snackbarHostState.showSnackbar(message)
+                        navController.navigateUp()
+                    }
+                },
+                onUpdateFailure = { message ->
+                    scope.launch {
+                        Log.d(
+                            "HomeNavGraph",
+                            "Showing snackbar on logout failure with message: $message"
+                        )
+                        snackbarHostState.showSnackbar(message)
+                    }
+                },
+                onClickBack = { navController.navigateUp() },
+                snackbarHostState = snackbarHostState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
+                keyboardController = keyboardController
             )
         }
     }

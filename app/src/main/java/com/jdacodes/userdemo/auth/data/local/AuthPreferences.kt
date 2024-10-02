@@ -5,7 +5,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.google.gson.Gson
 import com.jdacodes.userdemo.auth.util.Constants.AUTH_KEY
+import com.jdacodes.userdemo.auth.util.Constants.PROFILE_DATA
 import com.jdacodes.userdemo.auth.util.Constants.USER_DATA
+import com.jdacodes.userdemo.profile.data.remote.dto.ProfileDto
 import com.jdacodes.userdemo.userlist.data.remote.dto.UserDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -38,5 +40,15 @@ class AuthPreferences(
 
     val getUserData: Flow<String> = dataStore.data.map { preferences ->
         preferences[USER_DATA] ?: ""
+    }
+
+    suspend fun saveProfileData(profile: ProfileDto) {
+        dataStore.edit { preferences ->
+            preferences[PROFILE_DATA] = gson.toJson(profile)
+        }
+    }
+
+    val getProfileData: Flow<String> = dataStore.data.map { preferences ->
+        preferences[PROFILE_DATA] ?: ""
     }
 }

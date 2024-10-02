@@ -7,4 +7,5 @@ object Constants {
     val AUTH_KEY = stringPreferencesKey(name = "auth_key")
     const val AUTH_PREFERENCES = "AUTH_PREFERENCES"
     val USER_DATA = stringPreferencesKey("user_data")
+    val PROFILE_DATA = stringPreferencesKey("profile_data")
 }

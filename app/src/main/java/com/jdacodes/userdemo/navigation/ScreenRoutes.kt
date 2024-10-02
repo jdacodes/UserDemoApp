@@ -14,6 +14,7 @@ import com.jdacodes.userdemo.core.utils.Constants.HOME_SCREEN
 import com.jdacodes.userdemo.core.utils.Constants.LOGIN_SCREEN
 import com.jdacodes.userdemo.core.utils.Constants.PROFILE_SCREEN
 import com.jdacodes.userdemo.core.utils.Constants.REGISTER_SCREEN
+import com.jdacodes.userdemo.core.utils.Constants.UPDATE_PROFILE_SCREEN
 import com.jdacodes.userdemo.core.utils.Constants.USER_DETAIL_SCREEN
 import com.jdacodes.userdemo.core.utils.Constants.USERS_SCREEN
 
@@ -59,6 +60,14 @@ sealed class ScreenRoutes(
         title = R.string.profile.toString(),
         icon = Icons.Filled.Person,
         arguments = ""
+    ) {
+        val fullRoute = route + arguments
+    }
+    data object UpdateProfileScreen : ScreenRoutes(
+        route = UPDATE_PROFILE_SCREEN,
+        title = R.string.update_profile.toString(),
+        icon = null,
+        arguments = "/{userId}"
     ) {
         val fullRoute = route + arguments
     }

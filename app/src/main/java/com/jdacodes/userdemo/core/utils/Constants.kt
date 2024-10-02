@@ -11,6 +11,7 @@ object Constants {
     const val USER_DETAIL_SCREEN = "userDetail"
     const val DASHBOARD_SCREEN = "dashboard"
     const val PROFILE_SCREEN = "profile"
+    const val UPDATE_PROFILE_SCREEN = "updateProfile"
     const val HOME_SCREEN = "home"
     //Nav graphs
     const val AUTH_NAV_GRAPH = "authNavGraph"

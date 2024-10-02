@@ -45,6 +45,7 @@ import java.util.Locale
 fun ProfileScreenContent(
     viewModel: ProfileViewModel,
     user: User,
+    onClickUpdateProfile:() -> Unit,
     onClickLogout: () -> Unit,
     onLogoutSuccess: (String) -> Unit,
     onLogoutFailure: (String) -> Unit,
@@ -73,7 +74,8 @@ fun ProfileScreenContent(
                         user = user,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(130.dp)
+                            .height(130.dp),
+                        onClickUpdateProfile = onClickUpdateProfile
 
                     )
                 }
@@ -122,7 +124,11 @@ fun ProfileScreenContent(
 }
 
 @Composable
-fun UserProfile(user: User, modifier: Modifier) {
+fun UserProfile(
+    user: User,
+    modifier: Modifier,
+    onClickUpdateProfile: () -> Unit
+) {
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(
@@ -191,8 +197,7 @@ fun UserProfile(user: User, modifier: Modifier) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     modifier = Modifier.align(Alignment.End),
-                    onClick = {
-                    },
+                    onClick = onClickUpdateProfile,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.tertiary
                     ),

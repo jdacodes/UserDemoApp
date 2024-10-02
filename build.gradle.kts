@@ -5,4 +5,5 @@ plugins {
     alias(libs.plugins.google.daggerhilt.android) apply false
     alias(libs.plugins.jetbrains.kotlin.kapt) apply false
     alias(libs.plugins.jetbrains.kotlin.parcelize) apply false
+
 }

@@ -111,7 +111,7 @@ class ForgotPasswordViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            form = it.form.copy(emailError = "Unknown error occurred")
+                            form = it.form.copy(emailError = "Unknown error occurred"),
                         )
                     }
                     _eventChannel.send(
