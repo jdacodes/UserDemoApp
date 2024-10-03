@@ -3,8 +3,9 @@ package com.jdacodes.userdemo.profile.presentation.account
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun ProfileScreen(
@@ -21,11 +22,17 @@ fun ProfileScreen(
     val user = viewModel.profileState.value
     val userId = viewModel.profileState.value.id
 
+    LaunchedEffect(key1 = true, block = {
+        viewModel.getProfileInfo()
+    })
+
+    val profile by viewModel.uiState.collectAsStateWithLifecycle()
 
 
     ProfileScreenContent(
         viewModel = viewModel,
         user = user,
+        profile = profile,
         onClickUpdateProfile = {
             if (userId != null) {
                 onClickUpdateProfile(userId)

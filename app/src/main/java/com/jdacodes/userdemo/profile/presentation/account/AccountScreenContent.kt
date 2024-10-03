@@ -1,6 +1,7 @@
 package com.jdacodes.userdemo.profile.presentation.account
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jdacodes.userdemo.core.presentation.composables.CircularImage
+import com.jdacodes.userdemo.core.utils.toFormattedDate
+import com.jdacodes.userdemo.profile.domain.model.Profile
 import com.jdacodes.userdemo.profile.domain.model.User
 import kotlinx.coroutines.flow.collectLatest
 import java.util.Locale
@@ -45,13 +48,15 @@ import java.util.Locale
 fun ProfileScreenContent(
     viewModel: ProfileViewModel,
     user: User,
-    onClickUpdateProfile:() -> Unit,
+    onClickUpdateProfile: () -> Unit,
     onClickLogout: () -> Unit,
     onLogoutSuccess: (String) -> Unit,
     onLogoutFailure: (String) -> Unit,
     snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    profile: UpdateProfileUiState
 ) {
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -78,6 +83,10 @@ fun ProfileScreenContent(
                         onClickUpdateProfile = onClickUpdateProfile
 
                     )
+                }
+
+                item {
+                    ProfileInfo(profile = profile)
                 }
 
                 item {
@@ -118,6 +127,96 @@ fun ProfileScreenContent(
                     onLogoutFailure(event.message)
                 }
 
+            }
+        }
+    }
+}
+
+@Composable
+fun ProfileInfo(
+    profile: UpdateProfileUiState
+) {
+    Card(
+        modifier = Modifier.padding(8.dp),
+        border = BorderStroke(0.3.dp, MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors().copy(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        )
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Nick name: ",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
+                    ),
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = profile.form.name ?: "",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Light,
+                        fontSize = 14.sp,
+                    ),
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Work: ",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
+                    ),
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = profile.form.job,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Light,
+                        fontSize = 14.sp,
+                    ),
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Last updated: ",
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
+                    ),
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = profile.form.updatedAt.trim().toFormattedDate("dd MMM yyyy, HH:mm a"),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Light,
+                        fontSize = 14.sp,
+                    ),
+                )
             }
         }
     }
