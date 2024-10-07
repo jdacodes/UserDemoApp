@@ -25,7 +25,10 @@ fun RegisterScreen(
         viewModel = viewModel,
         uiState = uiState,
         snackbarHostState = snackbarHostState,
-        onClickRegister = { viewModel.onFormEvent(RegisterFormEvent.Submit) },
+        onClickRegister = {
+            viewModel.onFormEvent(RegisterFormEvent.Submit)
+            keyboardController.hide()
+        },
         onRegisterSuccess = onRegisterSuccess,
         onRegisterFailure = onRegisterFailure,
         emailState = emailState,

@@ -37,14 +37,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.jdacodes.userdemo.auth.presentation.forgot.ForgotPasswordFormEvent
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -68,7 +69,10 @@ fun UpdateProfileScreen(
     val updatedAtState = uiState.form.updatedAt
 
     UpdateProfileScreenContent(
-        onClickUpdate = { viewModel.onFormEvent(UpdateProfileFormEvent.Submit(userId)) },
+        onClickUpdate = {
+            viewModel.onFormEvent(UpdateProfileFormEvent.Submit(userId))
+            keyboardController.hide()
+        },
 //        {
 //            viewModel.update(userId = userId, profile = profile)
 //        },
@@ -111,8 +115,8 @@ fun UpdateProfileScreenContent(
     modifier: Modifier = Modifier,
     keyboardController: SoftwareKeyboardController
 ) {
-    val nameFocusRequester = remember { FocusRequester() }
-    val jobFocusRequester = remember { FocusRequester() }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -154,7 +158,7 @@ fun UpdateProfileScreenContent(
                         OutlinedTextField(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .focusRequester(nameFocusRequester),
+                                .focusRequester(focusRequester),
                             value = nameState,
                             onValueChange = {
                                 onNameTextChange(it)
@@ -172,7 +176,8 @@ fun UpdateProfileScreenContent(
                             ),
                             keyboardActions = KeyboardActions(
                                 onNext = {
-                                    jobFocusRequester.requestFocus()
+//                                    jobFocusRequester.requestFocus()
+                                    focusManager.moveFocus(FocusDirection.Down)
                                 }),
                             maxLines = 1,
                             singleLine = true,
@@ -195,8 +200,8 @@ fun UpdateProfileScreenContent(
                     Column {
                         OutlinedTextField(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(jobFocusRequester),
+                                .fillMaxWidth(),
+//                                .focusRequester(jobFocusRequester),
                             value = jobState,
                             onValueChange = {
                                 onJobTextChange(it)

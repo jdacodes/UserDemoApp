@@ -43,8 +43,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -76,8 +78,8 @@ fun RegisterScreenContent(
     keyboardController: SoftwareKeyboardController,
 ) {
     val emailFocusRequester = remember { FocusRequester() }
-    val passwordFocusRequester = remember { FocusRequester() }
-    val confirmFocusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
 
     Scaffold(
         modifier = modifier,
@@ -138,7 +140,7 @@ fun RegisterScreenContent(
                             ),
                             keyboardActions = KeyboardActions(
                                 onNext = {
-                                    passwordFocusRequester.requestFocus()  // Move focus to the next TextField when 'Next' is clicked
+                                    focusManager.moveFocus(FocusDirection.Down)
                                 }),
                             maxLines = 1,
                             singleLine = true,
@@ -163,8 +165,7 @@ fun RegisterScreenContent(
                     Column {
                         OutlinedTextField(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(passwordFocusRequester),
+                                .fillMaxWidth(),
                             value = passwordState,
                             onValueChange = {
                                 onPasswordTextChange(it)
@@ -184,7 +185,7 @@ fun RegisterScreenContent(
                             ),
                             keyboardActions = KeyboardActions(
                                 onNext = {
-                                    confirmFocusRequester.requestFocus()  // Move focus to the next TextField when 'Next' is clicked
+                                    focusManager.moveFocus(FocusDirection.Down)
                                 }),
                             trailingIcon = {
                                 val image = if (passwordVisible)
@@ -223,8 +224,7 @@ fun RegisterScreenContent(
                     Column {
                         OutlinedTextField(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(confirmFocusRequester),
+                                .fillMaxWidth(),
                             value = confirmState,
                             onValueChange = {
                                 onConfirmTextChange(it)
@@ -244,6 +244,7 @@ fun RegisterScreenContent(
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
+                                    focusManager.clearFocus()
                                     keyboardController.hide()
                                 }),
                             trailingIcon = {

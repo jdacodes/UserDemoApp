@@ -28,12 +28,15 @@ fun LoginScreen(
         viewModel = viewModel,
         uiState = uiState,
         snackbarHostState = snackbarHostState,
-        onClickLogin = {viewModel.onFormEvent(LoginFormEvent.Submit)},
+        onClickLogin = {
+            viewModel.onFormEvent(LoginFormEvent.Submit)
+            keyboardController.hide()
+        },
         onLoginSuccess = onLoginSuccess,
         onLoginFailure = onLoginFailure,
         onEmailTextChange = { viewModel.onFormEvent(LoginFormEvent.EmailChanged(it)) },
         onPasswordTextChange = { viewModel.onFormEvent(LoginFormEvent.PasswordChanged(it)) },
-        onRememberMeClicked = { viewModel.onFormEvent(LoginFormEvent.RememberMeChanged(it))},
+        onRememberMeClicked = { viewModel.onFormEvent(LoginFormEvent.RememberMeChanged(it)) },
         onClickForgotPassword = onClickForgotPassword,
         onClickDontHaveAccount = onClickDontHaveAccount,
         emailState = emailState,

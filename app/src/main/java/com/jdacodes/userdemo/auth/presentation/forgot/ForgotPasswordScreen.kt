@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -64,7 +65,10 @@ fun ForgotPasswordScreen(
         viewModel = viewModel,
         uiState = uiState,
         snackbarHostState = snackbarHostState,
-        onClickReset = { viewModel.onFormEvent(ForgotPasswordFormEvent.Submit) },
+        onClickReset = {
+            viewModel.onFormEvent(ForgotPasswordFormEvent.Submit)
+            keyboardController.hide()
+        },
         onResetSuccess = onResetSuccess,
         onResetFailure = onResetFailure,
         emailState = emailState,
@@ -90,7 +94,8 @@ fun ForgotPasswordContent(
     onBackClick: () -> Unit,
     keyboardController: SoftwareKeyboardController
 ) {
-    val emailFocusRequester = remember { FocusRequester() }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -132,7 +137,7 @@ fun ForgotPasswordContent(
                         OutlinedTextField(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .focusRequester(emailFocusRequester),
+                                .focusRequester(focusRequester),
                             value = emailState,
                             onValueChange = {
                                 onEmailTextChange(it)
@@ -150,6 +155,7 @@ fun ForgotPasswordContent(
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
+                                    focusManager.clearFocus()
                                     keyboardController.hide()
                                 }),
                             maxLines = 1,

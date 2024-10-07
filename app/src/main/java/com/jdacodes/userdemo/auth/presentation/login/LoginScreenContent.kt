@@ -44,8 +44,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -81,9 +83,8 @@ fun LoginScreenContent(
     keyboardController: SoftwareKeyboardController,
 ) {
 
-    val emailFocusRequester = remember { FocusRequester() }
-    val passwordFocusRequester = remember { FocusRequester() }
-
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -123,7 +124,7 @@ fun LoginScreenContent(
                         OutlinedTextField(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .focusRequester(emailFocusRequester),
+                                .focusRequester(focusRequester),
                             value = emailState,
                             onValueChange = {
                                 onEmailTextChange(it)
@@ -141,7 +142,7 @@ fun LoginScreenContent(
                             ),
                             keyboardActions = KeyboardActions(
                                 onNext = {
-                                    passwordFocusRequester.requestFocus()  // Move focus to the next TextField when 'Next' is clicked
+                                    focusManager.moveFocus(FocusDirection.Down)
                                 }),
                             maxLines = 1,
                             singleLine = true,
@@ -167,8 +168,7 @@ fun LoginScreenContent(
                     Column {
                         OutlinedTextField(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(passwordFocusRequester),
+                                .fillMaxWidth(),
                             value = passwordState,
                             onValueChange = {
                                 onPasswordTextChange(it)
