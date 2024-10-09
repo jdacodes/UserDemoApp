@@ -51,6 +51,9 @@ class ProfileViewModel @Inject constructor(
     private val _eventUpdateChannel = Channel<UpdateEvent>()
     val eventUpdateFlow = _eventUpdateChannel.receiveAsFlow()
 
+    private val _eventDeleteChannel = Channel<DeleteEvent>()
+    val eventDeleteChannel = _eventDeleteChannel.receiveAsFlow()
+
     private val _eventFormChannel = Channel<UpdateProfileUiState>()
     val eventFormChannel = _eventFormChannel.receiveAsFlow()
 
@@ -123,6 +126,46 @@ class ProfileViewModel @Inject constructor(
 
                 else -> {}
             }
+        }
+    }
+
+    fun deleteProfile(userId: Int?) {
+        if (userId != null){
+
+            viewModelScope.launch {
+                Log.d("ProfileViewModel", "Delete Profile with userId: $userId")
+                _uiState.update { it.copy(isLoading = true) }
+                val result = profileRepository.deleteProfile(id = userId)
+                Log.d("ProfileViewModel", "Delete Result: ${result.message}")
+                when(result) {
+                    is Resource.Success -> {
+                        Log.d("ProfileViewModel", "Delete success")
+                        _uiState.update { it.copy(isLoading = false, isSuccess = true) }
+                        _eventDeleteChannel.send(
+                            DeleteEvent.DeleteSuccess(
+                                message = "Delete profile success"
+                            )
+                        )
+                    }
+                    is Resource.Error -> {
+                        Log.d("ProfileViewModel", "Delete failed")
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = result.message
+                            )
+                        }
+                        _eventDeleteChannel.send(
+                            DeleteEvent.DeleteFailure(
+                                message = "Deleting your profile failed"
+                            )
+                        )
+                    }
+                    else -> {}
+                }
+            }
+        } else {
+            Log.d("ProfileViewModel", "Null userId")
         }
     }
 
@@ -218,7 +261,7 @@ class ProfileViewModel @Inject constructor(
                         )
                     )
                 }
-                setNameError(null)
+                setUpdateAtError(null)
             }
 
             is UpdateProfileFormEvent.Submit -> {

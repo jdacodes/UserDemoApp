@@ -109,6 +109,26 @@ fun HomeNavGraph(
                 onClickUpdateProfile = { userId ->
                     navController.navigate("${ScreenRoutes.UpdateProfileScreen.route}/$userId")
                 },
+                onDeleteSuccess = { message ->
+
+                    scope.launch {
+                        Log.d(
+                            "HomeNavGraph",
+                            "Showing snackbar on delete success with message: $message"
+                        )
+                        snackbarHostState.showSnackbar(message)
+                    }
+                    logout()
+                },
+                onDeleteFailure = { message ->
+                    scope.launch {
+                        Log.d(
+                            "HomeNavGraph",
+                            "Showing snackbar on delete failure with message: $message"
+                        )
+                        snackbarHostState.showSnackbar(message)
+                    }
+                },
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .fillMaxSize()

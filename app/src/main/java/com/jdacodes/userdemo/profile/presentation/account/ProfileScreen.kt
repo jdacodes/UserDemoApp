@@ -12,6 +12,8 @@ fun ProfileScreen(
     viewModel: ProfileViewModel,
     onLogoutSuccess: (String) -> Unit,
     onLogoutFailure: (String) -> Unit,
+    onDeleteSuccess: (String) -> Unit,
+    onDeleteFailure: (String) -> Unit,
     onClickUpdateProfile: (Int) -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
@@ -41,6 +43,12 @@ fun ProfileScreen(
         onClickLogout = { viewModel.logout() },
         onLogoutSuccess = onLogoutSuccess,
         onLogoutFailure = onLogoutFailure,
+        onClickDelete = {
+                viewModel.deleteProfile(userId = userId)
+
+        },
+        onDeleteSuccess = onDeleteSuccess,
+        onDeleteFailure = onDeleteFailure,
         snackbarHostState = snackbarHostState,
         modifier = modifier
     )

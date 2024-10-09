@@ -8,4 +8,5 @@ interface ProfileRepository {
     fun getUserProfile(): Flow<String>
     suspend fun updateProfileInfo(id: Int, profileRequest: ProfileRequest): Resource<Unit>
     suspend fun getProfileInfo(): Flow<String>
+    suspend fun deleteProfile(id: Int): Resource<Unit>
 }

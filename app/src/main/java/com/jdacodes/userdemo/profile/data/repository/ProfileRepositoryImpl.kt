@@ -53,4 +53,22 @@ class ProfileRepositoryImpl(
     override suspend fun getProfileInfo(): Flow<String> {
         return authPreferences.getProfileData
     }
+
+    override suspend fun deleteProfile(id: Int): Resource<Unit> {
+        return try {
+            val response = profileApiService.deleteProfile(id)
+            if (response.isSuccessful) {
+                Resource.Success(Unit)
+            } else {
+                Resource.Error(message = "Something went wrong while deleting your Account")
+            }
+        } catch (e: IOException) {
+            Log.d("ProfileRepositoryImpl", "Delete error: ${e.message}")
+            Resource.Error(message = "Could not reach the server, please check your internet connection!")
+        } catch (e: HttpException) {
+            Log.d("ProfileRepositoryImpl", "Delete error: ${e.message}")
+            Resource.Error(message = "An Unknown error occurred, please try again!")
+        }
+
+    }
 }
