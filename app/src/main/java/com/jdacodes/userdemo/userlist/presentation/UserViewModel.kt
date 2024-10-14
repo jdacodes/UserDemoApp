@@ -47,7 +47,7 @@ class UserViewModel @Inject constructor(
         loadUsers()
     }
 
-    private fun loadUsers() {
+     fun loadUsers() {
         viewModelScope.launch {
             getUserListCase().cachedIn(viewModelScope).collectLatest { pagingData ->
                 _users.value = pagingData
